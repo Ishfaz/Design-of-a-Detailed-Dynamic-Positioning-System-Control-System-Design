@@ -44,15 +44,14 @@ Dynamic positioning systems are essential for maintaining a vessel's position an
    - Defined as Surge-Sway-Yaw for horizontal plane dynamics.
 
 **Transformation Matrix**:
-
-$\[
+\[
 R(\psi) = 
 \begin{bmatrix} 
 \cos\psi & -\sin\psi & 0 \\ 
 \sin\psi & \cos\psi & 0 \\ 
 0 & 0 & 1 
 \end{bmatrix}
-\]$
+\]
 
 This matrix transforms between the NED and body-fixed frames.
 
