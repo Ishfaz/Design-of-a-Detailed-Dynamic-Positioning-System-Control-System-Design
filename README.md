@@ -66,11 +66,11 @@ M\dot{\nu} + CRB(\nu)\nu + CA(\nu_r)\nu_r + D(\nu_r) + G(\eta) = \tau_{env} + \t
 ]$$
 
 Where:
-- \( M \): Inertia matrix (includes added mass).
-- \( CRB \), \( CA \): Coriolis and centripetal matrices.
-- \( D \): Damping forces.
-- \( G \): Restoring forces.
-- \( \tau_{env}, \tau_{thr} \): Environmental and thruster forces.
+- $$( M )$$: Inertia matrix (includes added mass).
+- $$( CRB )$$, $$( CA )$$: Coriolis and centripetal matrices.
+- $$( D )$$: Damping forces.
+- $$( G )$$: Restoring forces.
+- $$( \tau_{env}, \tau_{thr} )$$: Environmental and thruster forces.
 
 ---
 
@@ -78,9 +78,9 @@ Where:
 
 The control plant model simplifies the process plant for controller design, focusing on low-frequency (LF) and wave-frequency (WF) dynamics:
 
-\[
+$$[
 \dot{\nu} = M^{-1}(-D\nu - G(\eta) + \tau_{env} + \tau_{thr})
-\]
+]$$
 
 Key components:
 - **Low-Frequency Model**: Describes slow vessel motions due to environmental forces.
