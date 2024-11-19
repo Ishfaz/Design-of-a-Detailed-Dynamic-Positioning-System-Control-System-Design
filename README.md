@@ -44,15 +44,15 @@ Dynamic positioning systems are essential for maintaining a vessel's position an
    - Defined as Surge-Sway-Yaw for horizontal plane dynamics.
 
 **Transformation Matrix**:
-\[
+$$[
 R(\psi) = 
 \begin{bmatrix} 
 \cos\psi & -\sin\psi & 0 \\ 
 \sin\psi & \cos\psi & 0 \\ 
 0 & 0 & 1 
 \end{bmatrix}
-\]
-
+]
+$$
 This matrix transforms between the NED and body-fixed frames.
 
 ---
@@ -61,9 +61,9 @@ This matrix transforms between the NED and body-fixed frames.
 
 The process plant model represents the full vessel dynamics using the 6 DOF motion equation:
 
-\[
+$$[
 M\dot{\nu} + CRB(\nu)\nu + CA(\nu_r)\nu_r + D(\nu_r) + G(\eta) = \tau_{env} + \tau_{thr}
-\]
+]$$
 
 Where:
 - \( M \): Inertia matrix (includes added mass).
