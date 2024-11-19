@@ -1,118 +1,166 @@
-# Design of a Detailed Dynamic Positioning System - Control System Design
+# Design-of-a-Detailed-Dynamic-Positioning-System
 
-This repository contains the project **"Design of a Detailed Dynamic Positioning System"**, which involves designing and implementing a dynamic positioning (DP) system for a marine supply vessel using MATLAB and Simulink with the MSS Toolbox. The project encompasses the development of mathematical models, control system design, observer implementation, and thrust allocation strategies to ensure precise vessel positioning under various environmental conditions.
+This repository contains the project **"Design of a Detailed Dynamic Positioning System"**, focused on designing and implementing a dynamic positioning (DP) control system for marine vessels using MATLAB, Simulink, and the MSS Toolbox. This project explores mathematical modeling, control system design, observer implementation, thrust allocation, and environmental load simulations.
 
 ---
 
 ## Table of Contents
-
 1. [Introduction](#introduction)
-2. [Project Overview](#project-overview)
-   - [Reference Frames](#reference-frames)
-   - [Process Plant Model](#process-plant-model)
-   - [Control Plant Model](#control-plant-model)
-   - [Environmental Loads](#environmental-loads)
-   - [Reference Model](#reference-model)
-   - [Observer Design](#observer-design)
-   - [Controller Design](#controller-design)
-   - [Thrust Allocation](#thrust-allocation)
-3. [Simulations](#simulations)
-4. [Results](#results)
-5. [Conclusion](#conclusion)
-6. [Usage](#usage)
-7. [Dependencies](#dependencies)
-8. [License](#license)
+2. [Reference Frames](#reference-frames)
+3. [Process Plant Model](#process-plant-model)
+4. [Control Plant Model](#control-plant-model)
+5. [Environmental Loads](#environmental-loads)
+6. [Reference Model](#reference-model)
+7. [Observer Design](#observer-design)
+8. [Controller Design](#controller-design)
+9. [Thrust Allocation](#thrust-allocation)
+10. [Simulations](#simulations)
+11. [Results](#results)
+12. [Conclusion](#conclusion)
+13. [Usage](#usage)
+14. [Dependencies](#dependencies)
+15. [License](#license)
 
 ---
 
 ## Introduction
 
-Dynamic positioning systems are crucial for maintaining the position and heading of marine vessels without the need for anchors, using thrusters and propellers. This project aims to design a detailed DP system that can handle environmental disturbances such as wind, waves, and currents.
+Dynamic Positioning (DP) systems are critical for maintaining a vessel's position and heading without the need for anchors. This project details the design of a DP system capable of counteracting environmental disturbances like wind, waves, and currents.
+
+Key components include:
+- **Observer Design**: Extended Kalman Filter (EKF) and Nonlinear Passive Observer (NPO).
+- **Controller Design**: Proportional-Integral-Derivative (PID) and Linear Quadratic Gaussian (LQG).
+- **Thrust Allocation**: Optimization for overactuated systems.
 
 ---
 
-## Project Overview
+## Reference Frames
 
-### Reference Frames
+Two main reference frames are used:
+1. **Earth-Fixed Frame (NED)**: Tracks vessel's position relative to a fixed point.
+2. **Body-Fixed Frame**: Coordinates attached to the vessel's body, facilitating control actions.
 
-- **Earth-Fixed Frame (NED)**: North-East-Down frame used for positioning.
-- **Body-Fixed Frame**: Attached to the vessel, used for control inputs.
+### Equation for Transformation:
+\[
+R(\psi) = 
+\begin{bmatrix}
+\cos\psi & -\sin\psi & 0 \\
+\sin\psi & \cos\psi  & 0 \\
+0        & 0         & 1
+\end{bmatrix}
+\]
+This rotation matrix transforms between the NED and body-fixed frames.
 
-### Process Plant Model
+---
 
-Developed a comprehensive model describing the actual vessel dynamics, including mass, damping, and environmental forces.
+## Process Plant Model
 
-### Control Plant Model
+The process plant represents high-fidelity vessel dynamics. The 6 DOF motion equation is:
 
-Simplified model used for controller design, focusing on essential behaviors and reduced-order representations. The model is divided into:
+\[
+M\nu̇ + CRB(\nu)\nu + CA(\nu_r)\nu_r + D(\nu_r) + G(\eta) = τ_{env} + τ_{thr}
+\]
 
-- **Low-Frequency (LF) Model**: Captures slow vessel motions due to environmental forces.
-- **Wave-Frequency (WF) Model**: Represents the vessel's response to wave-induced motions.
-- **Bias Model**: Accounts for slowly varying forces and model uncertainties.
-- **Measurement Model**: Incorporates sensor measurements and noise.
+Where:
+- \( M \): Inertia matrix (includes added mass).
+- \( CRB \), \( CA \): Coriolis and centripetal matrices.
+- \( D \): Damping forces.
+- \( G \): Restoring forces.
+- \( τ_{env}, τ_{thr} \): Environmental and thruster forces.
 
-### Environmental Loads
+---
 
-Implemented models for:
+## Control Plant Model
 
-- **Water Currents**: Surface current modeling using a 2D approach.
-- **Wind**: Modeled mean wind and gusts using the Harris spectrum.
-- **Waves**: Used ITTC spectrum to simulate wave effects.
+The reduced-order control model simplifies the process plant model for controller design, splitting motions into:
+1. **Low-Frequency (LF)**: Slow motions due to environmental forces.
+2. **Wave-Frequency (WF)**: Oscillations induced by waves.
+3. **Bias Model**: Represents slow-varying forces and model uncertainties.
 
-### Reference Model
+---
 
-Created a reference trajectory generator to ensure smooth transitions between setpoints, including acceleration, constant velocity, deceleration, and constant position phases.
+## Environmental Loads
 
-### Observer Design
+Models for environmental disturbances include:
+- **Current**: Surface current modeled as a vector in the NED frame:
+  \[
+  \nu_c = [V_c\cos\psi_c, V_c\sin\psi_c, 0]^T
+  \]
+- **Wind**: Calculated using the Harris spectrum.
+- **Waves**: Simulated using the ITTC spectrum:
+  \[
+  S(\omega) = A \omega^{-5} \exp\left(-\frac{B}{\omega^4}\right)
+  \]
 
-Implemented two observers:
+---
 
-- **Extended Kalman Filter (EKF)**
-- **Nonlinear Passive Observer (NPO)**
+## Reference Model
 
-After comparison, the NPO was selected for its better performance and easier tuning.
+The reference model generates smooth transitions between setpoints using a four-phase trajectory:
+1. **Acceleration**
+2. **Constant Velocity**
+3. **Deceleration**
+4. **Constant Position**
 
-### Controller Design
+---
 
-Designed and compared:
+## Observer Design
 
-- **Proportional-Integral-Derivative (PID) Controller**
-- **Linear Quadratic Gaussian (LQG) Controller**
+### 1. Extended Kalman Filter (EKF)
+A nonlinear filter estimating states from noisy measurements. Prediction and correction stages handle state estimation and noise filtering.
 
-The LQG controller was chosen due to its optimal performance and ease of tuning.
+### 2. Nonlinear Passive Observer (NPO)
+A simpler alternative to the EKF, tuned using Lyapunov analysis to ensure global stability.
 
-### Thrust Allocation
+---
 
-Developed a thrust allocation algorithm to distribute control efforts among the vessel's thrusters, considering limitations and optimizing performance. The system handles:
+## Controller Design
 
-- **Overactuation**: More thrusters than control degrees of freedom.
-- **Thruster Constraints**: Physical limitations like maximum thrust and rotation speeds.
-- **Optimization**: Minimizes power consumption and wear.
+### PID Controller
+The control law:
+\[
+τ_{PID} = K_pR^T(\eta_d - \eta) + K_i \int R^T(\eta_d - \eta) dt + K_d(\nu_d - \nu)
+\]
+
+### LQG Controller
+Minimizes the quadratic cost:
+\[
+J = E\left[\int_0^\infty (x^TQx + u^TRu) dt\right]
+\]
+
+---
+
+## Thrust Allocation
+
+Handles overactuated systems using:
+- **Moore-Penrose Pseudoinverse**:
+  \[
+  u = B^T (BB^T)^{-1} τ
+  \]
+- **Optimization**: Minimizes power consumption and ensures operational constraints.
 
 ---
 
 ## Simulations
 
-Conducted several simulations to validate the system:
-
-1. **Environmental Loads**: Vessel behavior under environmental forces without control inputs.
-2. **DP and Thrust Allocation**: Four-corner test to assess controller and thrust allocation performance.
-3. **DP and Environmental Forces**: Tested the DP system under environmental disturbances.
-4. **Observer Selection**: Compared EKF and NPO observers.
-5. **Complete Simulation**: Validated the full DP system with selected observer and controller.
-6. **Capability Plot**: Assessed the system's capability under varying environmental conditions.
-7. **Observer Robustness**: Tested observer performance under extreme conditions.
+1. **Environmental Loads**: Vessel response to currents, wind, and waves.
+2. **DP and Thrust Allocation**: Four-corner test to validate thrust allocation and controller performance.
+3. **Observer Comparison**: Evaluated EKF vs. NPO.
+4. **Complete DP System**: Integration of all subsystems under varying conditions.
 
 ---
 
 ## Results
 
-- The **LQG controller** and **NPO observer** provided optimal performance in maintaining vessel position and heading.
-- The **thrust allocation algorithm** effectively managed thruster outputs, even under thruster failure scenarios.
-- The system demonstrated robustness under various environmental conditions, including extreme weather.
+- The **LQG controller** outperformed PID in stability and response time.
+- The **NPO observer** offered robust state estimation with simpler tuning compared to EKF.
+- Thrust allocation effectively managed overactuation and minimized power usage.
 
 ---
 
-## Conclusion
+## Usage
 
-The project successfully developed a detailed DP system for a marine vessel, incorporating advanced control strategies, observer designs, and thrust allocation methods. The system was validated through extensive simulations, demonstrating its effectiveness and robustness.
+Clone the repository and open the MATLAB Simulink files. Ensure the MSS Toolbox is installed for simulation.
+
+```bash
+git clone https://github.com/your-repo-link.git
