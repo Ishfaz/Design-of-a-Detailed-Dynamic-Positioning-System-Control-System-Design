@@ -168,9 +168,3 @@ This project successfully developed a detailed DP system for marine vessels, inc
 - Simulink
 
 ---
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
----
