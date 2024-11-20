@@ -51,8 +51,7 @@ R(\psi) =
 \sin\psi & \cos\psi & 0 \\ 
 0 & 0 & 1 
 \end{bmatrix}
-]
-$$
+]$$
 This matrix transforms between the NED and body-fixed frames.
 
 ---
